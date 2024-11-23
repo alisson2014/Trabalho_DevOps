@@ -1,0 +1,55 @@
+services:
+  mariadb:
+    build:
+      context: .
+      dockerfile: Dockerfile.mariadb
+    container_name: mariadb_container
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: school_db
+      MYSQL_USER: flask_user
+      MYSQL_PASSWORD: flask_password
+
+  flask_app:
+    build:
+      context: .
+      dockerfile: Dockerfile.flask
+    container_name: flask_app_container
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mariadb
+    environment:
+      FLASK_APP: app
+      FLASK_ENV: development
+      FLASK_DB_HOST: mariadb
+      FLASK_DB_USER: flask_user
+      FLASK_DB_PASSWORD: flask_password
+      FLASK_DB_NAME: school_db
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    depends_on:
+      - flask_app
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+volumes:
+  db_data:
+  grafana_data:
+
