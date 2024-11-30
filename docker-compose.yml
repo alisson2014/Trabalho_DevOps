@@ -1,8 +1,8 @@
 services:
   mariadb:
     build:
-      context: .
-      dockerfile: Dockerfile.mariadb
+      context: ./docker/mariadb
+      dockerfile: Dockerfile
     container_name: mariadb_container
     ports:
       - "3306:3306"
@@ -16,8 +16,8 @@ services:
 
   flask_app:
     build:
-      context: .
-      dockerfile: Dockerfile.flask
+      context: ./docker/flask
+      dockerfile: Dockerfile
     container_name: flask_app_container
     ports:
       - "5000:5000"
