@@ -81,6 +81,10 @@ def listar_alunos():
     output = [{'id': aluno.id, 'nome': aluno.nome, 'sobrenome': aluno.sobrenome, 'turma': aluno.turma, 'disciplinas': aluno.disciplinas} for aluno in alunos]
     return jsonify(output)
 
+@app.route('/teste', methods=['GET'])
+def teste():
+    return jsonify({'teste': 'ok'})
+
 # Rota para adicionar um aluno - Método POST
 @app.route('/alunos', methods=['POST'])
 def adicionar_aluno():
