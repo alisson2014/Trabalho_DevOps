@@ -49,6 +49,30 @@ services:
     depends_on:
       - prometheus
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_container
+    depends_on: 
+      - mariadb
+    environment:
+      PMA_HOST: mariadb
+      MYSQL_ROOT_PASSWORD: root_password
+    ports: 
+      - "8080:80"
+
+  test:
+    build:
+      context: .  
+      dockerfile: Dockerfile
+    command: ["pytest", "/app/test_app.py"] # Roda os testes no arquivo test_app.py
+    depends_on:
+      - mariadb
+      - flask_app
+    environment:
+      - DATABASE_URL=mysql+pymysql://flask_user:flask_password@mariadb:3306/school_db
+    networks:
+      - default # Conecta o contêiner aos mesmos serviços de rede
+
 volumes:
   db_data:
   grafana_data:
