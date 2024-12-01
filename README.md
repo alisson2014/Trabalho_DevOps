@@ -2,17 +2,20 @@
 
 ## Alunos
 
-### Riyuiti Mizuno RA:22.9016-0
-### Alisson Vinicius Morais de Almeida  RA:23.9782-6
++ Riyuiti Mizuno RA:22.9016-0
++ Alisson Vinicius Morais de Almeida  RA:23.9782-6
 
 ## Inicio
 
 ### O arquivo docker-compose.yml foi criado pelo terminal do ubuntu, para que possa configurar os container dentro do projeto.
 
+```docker
 vim docker-compose.yml
+```
 
 ### Para editar o arquivo docker-compose.yml decidimos editar pelo visual studio code, pois dessa achamos que seria da forma mais fácil de organizar, e implmentar novos codigos dentro dele. Dessa forma, dentro do arquivo foi inserido o seguinte codigo:
 
+```docker
 services:
   mariadb:
     build:
@@ -78,10 +81,13 @@ services:
 volumes:
   db_data:
   grafana_data:
-
+  ```
+  
   ### Decidimos implementar todos os containers necessarios para o projeto, que no caso foi o mariaDB, flask, prometheus, grafana e php. Após isso, criamos a pasta src e dentro dele criamos o arquivo app.py, com os seguintes códigos:
 
-#### Código principal do Flask (app.py)
+```docker
+
+# Código principal do Flask (app.py)
 import time
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
@@ -95,22 +101,22 @@ import logging
 app = Flask(__name__)
 
 metrics = PrometheusMetrics(app)
-#### Configuração da chave secreta para sessões
+# Configuração da chave secreta para sessões
 app.config['SECRET_KEY'] = 'minha_chave_secreta_super_secreta'  # Substitua por uma chave segura
 
-#### Configuração do banco de dados
+# Configuração do banco de dados
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root_password@mariadb/school_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-#### Inicializar o banco de dados e o AppBuilder
+# Inicializar o banco de dados e o AppBuilder
 db = SQLAlchemy(app)
 appbuilder = AppBuilder(app, db.session)
 
-#### Configuração do log
+# Configuração do log
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-#### Modelo de Aluno - Definição da tabela 'Aluno' no banco de dados
+# Modelo de Aluno - Definição da tabela 'Aluno' no banco de dados
 class Aluno(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(50), nullable=False)
@@ -119,7 +125,7 @@ class Aluno(db.Model):
     disciplinas = db.Column(db.String(200), nullable=False)
     ra = db.Column(db.String(50), nullable=False)
 
-#### Tentar conectar até o MariaDB estar pronto
+# Tentar conectar até o MariaDB estar pronto
 attempts = 5
 for i in range(attempts):
     try:
@@ -145,12 +151,12 @@ for i in range(attempts):
             logger.error("Não foi possível conectar ao banco de dados após várias tentativas.")
             raise
 
-#### Visão do modelo Aluno para o painel administrativo
+# Visão do modelo Aluno para o painel administrativo
 class AlunoModelView(ModelView):
     datamodel = SQLAInterface(Aluno)
     list_columns = ['id', 'nome', 'sobrenome', 'turma', 'disciplinas', 'ra']
 
-#### Adicionar a visão do modelo ao AppBuilder
+# Adicionar a visão do modelo ao AppBuilder
 appbuilder.add_view(
     AlunoModelView,
     "Lista de Alunos",
@@ -158,14 +164,14 @@ appbuilder.add_view(
     category="Alunos",
 )
 
-#### Rota para listar todos os alunos - Método GET
+# Rota para listar todos os alunos - Método GET
 @app.route('/alunos', methods=['GET'])
 def listar_alunos():
     alunos = Aluno.query.all()
     output = [{'id': aluno.id, 'nome': aluno.nome, 'sobrenome': aluno.sobrenome, 'turma': aluno.turma, 'disciplinas': aluno.disciplinas, 'ra': aluno.ra} for aluno in alunos]
     return jsonify(output)
 
-#### Rota para adicionar um aluno - Método POST
+# Rota para adicionar um aluno - Método POST
 @app.route('/alunos', methods=['POST'])
 def adicionar_aluno():
     data = request.get_json()
@@ -202,9 +208,10 @@ ENV MYSQL_USER=flask_user
 ENV MYSQL_PASSWORD=flask_password
 
 EXPOSE 3306
+```
 
   ### Após o banco de dados, foi inserido o comando no terminal para subir os container que foram criados:
 
+```docker
   docker compose up -d
-
-  
+  ```
