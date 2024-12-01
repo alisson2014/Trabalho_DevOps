@@ -287,4 +287,18 @@ EXPOSE 3306
 
   # Segundo Teste  
 
-  ### Em seguida iremos entra na web com o "localhost:8080" que foi configurado dentro do container do jenkins, acessando na web, iremos utilizar as ferramentas disponíveis dentro do jenkins, nesse caso, iremos utiliar para gerenciar pipeline do projeto. Para isso, precisamos selecionar a opção "Pipeline", pois a pipeline no Jenkins automatiza o processo de integração e entrega contínua (CI/CD), orquestrando etapas como compilação, testes e implantação, depois de selecionado, iremos prosseguidar clicando o botão "Tudo pronto".
+  ### Em seguida iremos entra na web com o "localhost:8080" que foi configurado dentro do container do jenkins, acessando na web, iremos utilizar as ferramentas disponíveis dentro do jenkins, nesse caso, iremos utiliar para gerenciar pipeline do projeto. Para isso, inserimos um nome no item, em seguida selecionamoes a opção "Pipeline", pois a pipeline no Jenkins automatiza o processo de integração e entrega contínua (CI/CD), orquestrando etapas como compilação, testes e implantação, depois de selecionado, iremos prosseguidar clicando o botão "Tudo pronto".
+
+  ![alt text](image-3.png)
+
+  ### Dentro da configuração, vamos na opção de definição, e trocamos para "Pipeline scrip from SCM", dentro do "SCM" selecionamoso "GIT", pois dessa forma podemos inserir o repositório do projeto dentro do campo "Repository URL", que no caso, o repósitrio que foi inserido foi esse: "https://github.com/alisson2014/Trabalho_DevOps.git", nas credenciais só é necessário configurar se no caso o repsitório for privado, como nosso caso é público, deixamos a opção "none", e na branch deixamos como /main, para executar dentro da branch principal.
+
+  ![alt text](image-4.png)
+
+  ![alt text](image-5.png)
+
+  ### Para finalizar, foi testado dentro do jenkins os testes unitários, para garantir a integridade do código antes do deploy.
+
+  ![alt text](image-6.png)
+
+  
