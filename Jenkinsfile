@@ -10,22 +10,24 @@ pipeline {
             }
         }
 
-        stage('Construir Containers') {
-            steps {
-                sh 'docker compose down -v'
-                sh 'docker compose build'
-            }
-        }
-
         stage('Rodar Testes') {
             steps {
-                sh 'docker compose exec flask_app pytest src/test_app.py'
+                sh 'docker compose up -d'
+                try {
+                    sh 'docker compose exec flask_app pytest src/test_app.py'
+                } catch (Exception e) {
+                    currentBuild.result = 'FAILURE'
+                    error "Erro ao rodar testes: ${e.message}"
+                    throw e
+                } finally {
+                    sh 'docker compose down -v'
+                }
             }
         }
 
         stage('Build e Deploy') {
             steps {
-                sh 'docker compose up -d'
+                sh 'docker compose up --build -d'
             }
         }
     }
