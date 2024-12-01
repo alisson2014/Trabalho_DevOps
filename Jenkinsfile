@@ -12,14 +12,14 @@ pipeline {
 
         stage('Construir Containers') {
             steps {
-                sh 'docker compose down -v'
-                sh 'docker compose build'
+                sh 'docker-compose down -v'
+                sh 'docker-compose build'
             }
         }
 
         stage('Rodar Testes') {
             steps {
-                sh 'docker compose exec flask_app pytest src/test_app.py'
+                sh 'docker-compose exec flask_app pytest src/test_app.py'
             }
         }
 
