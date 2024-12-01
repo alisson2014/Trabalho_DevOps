@@ -15,7 +15,7 @@ pipeline {
                 script {
                     sh 'docker compose up -d'
                     try {
-                        sh 'docker compose exec flask_app pytest src/test_app.py'
+                        sh 'docker compose exec flask_app pytest test_app.py'
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
                         error "Erro ao rodar testes: ${e.message}"
