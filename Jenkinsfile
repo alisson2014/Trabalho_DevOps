@@ -14,6 +14,8 @@ pipeline {
             steps {
                 script {
                     sh 'docker compose up -d'
+                    sh 'sleep 50' 
+                    
                     try {
                         sh 'docker compose exec flask_app pytest'
                     } catch (Exception e) {
