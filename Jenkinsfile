@@ -4,35 +4,37 @@ pipeline {
     stages {
         stage('Download do Código') {
             steps {
-                scripts {
+                script {
                     git branch: "main",  url: 'https://github.com/alisson2014/Trabalho_DevOps.git'
                 }
             }
         }
 
+        stage('Construir Containers') {
+            steps {
+                sh 'docker compose down -v'
+                sh 'docker compose build'
+            }
+        }
+
         stage('Rodar Testes') {
             steps {
-                sh 'python3 -m venv venv'
-                sh '. venv/bin/activate'
-                sh 'pip install -r requirements.txt'
-                sh 'pytest src/test_app.py'
+                sh 'docker compose exec flask_app pytest src/test_app.py'
             }
         }
 
         stage('Build e Deploy') {
             steps {
-                sh 'docker-compose up --build -d'
+                sh 'docker-compose up -d'
             }
         }
     }
 
     post {
         success {
-            // Enviar notificação de sucesso
             echo 'Pipeline finalizada com sucesso!'
         }
         failure {
-            // Enviar notificação de falha
             echo 'Pipeline falhou!'
         }
     }
