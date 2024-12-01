@@ -1,0 +1,14 @@
+{
+    "name": "Python DevContainer",
+    "dockerComposeFile": "../docker-compose.yml",
+    "service": "flask_app",
+    "workspaceFolder": "/app",
+    "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash"
+    },
+    "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance"
+    ],
+    "remoteUser": "vscode"
+}
