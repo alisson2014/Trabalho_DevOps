@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Download do Código') {
             steps {
-                git 'https://github.com/alisson2014/Trabalho_DevOps.git'
+                git branch: "main", 'https://github.com/alisson2014/Trabalho_DevOps.git'
             }
         }
 
