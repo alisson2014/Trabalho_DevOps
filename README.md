@@ -2,8 +2,8 @@
 
 ## Alunos
 
-+ Riyuiti Mizuno RA:22.9016-0
-+ Alisson Vinicius Morais de Almeida  RA:23.9782-6
++ Riyuiti Mizuno RA: 22.9016-0
++ Alisson Vinicius Morais de Almeida  RA: 23.9782-6
 
 ## Inicio
 
@@ -82,7 +82,7 @@ volumes:
   db_data:
   grafana_data:
   ```
-  
+
   ### Decidimos implementar todos os containers necessarios para o projeto, que no caso foi o mariaDB, flask, prometheus, grafana e php. Após isso, criamos a pasta src e dentro dele criamos o arquivo app.py, com os seguintes códigos:
 
 ```docker
@@ -215,3 +215,19 @@ EXPOSE 3306
 ```docker
   docker compose up -d
   ```
+
+  # Primeiro teste
+
+  ### Depois de verificar os containers, o primeiro teste foi se o "localhost:5000" que foi configurado dentro do container flask-app está funcionando, e deu seguintes resultados:
+
+  ![alt text](image.png)
+
+  ### Em seguida, foi feito o teste dentro da web o "GET", e o "POST" dos alunos está funcionando, para garantir que a mariadb está armazenando os dados inseridos, nesse caso foi feito de forma manual.
+
+  ![alt text](image-1.png)
+
+  # Conclusão
+
+  ### Tivemos um ótimo resultado em poder acessar o "localhost:5000" e armazenamento dos dados dos alunos.
+
+  
