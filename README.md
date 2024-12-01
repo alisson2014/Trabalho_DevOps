@@ -230,4 +230,61 @@ EXPOSE 3306
 
   ### Tivemos um ótimo resultado em poder acessar o "localhost:5000" e armazenamento dos dados dos alunos.
 
-  
+  # Jenkins
+
+
+  ### Em seguida, decidimos primeiramente criar a pasta Jenkinsfile dentro da raiz, pois nessa pasta vamos verificar as etapas do processo, desde download até deploy da aplicação: 
+
+  ```docker
+  pipeline {
+    agent any
+
+    stages {
+        stage('Download do Código') {
+            steps {
+                script {
+                    git branch: "main",  url: 'https://github.com/alisson2014/Trabalho_DevOps.git'
+                }
+            }
+        }
+
+        stage('Rodar Testes') {
+            steps {
+                script {
+                    sh 'docker compose up -d'
+                    sh 'sleep 50' 
+                    
+                    try {
+                        sh 'docker compose exec flask_app pytest'
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error "Erro ao rodar testes: ${e.message}"
+                        throw e
+                    } finally {
+                        sh 'docker compose down -v'
+                    }
+                }
+            }
+        }
+
+        stage('Build e Deploy') {
+            steps {
+                sh 'docker compose up --build -d'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline finalizada com sucesso!'
+        }
+        failure {
+            echo 'Pipeline falhou!'
+        }
+    }
+}
+```
+
+  # Segundo Teste  
+
+  ### Em seguida iremos entra na web com o "localhost:8080" que foi configurado dentro do container do jenkins, acessando na web, iremos utilizar as ferramentas disponíveis dentro do jenkins, nesse caso, iremos utiliar para gerenciar pipeline do projeto. Para isso, precisamos selecionar a opção "Pipeline", pois a pipeline no Jenkins automatiza o processo de integração e entrega contínua (CI/CD), orquestrando etapas como compilação, testes e implantação, depois de selecionado, iremos prosseguidar clicando o botão "Tudo pronto".
