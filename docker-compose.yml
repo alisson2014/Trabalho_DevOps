@@ -58,9 +58,19 @@ services:
       PMA_HOST: mariadb
       MYSQL_ROOT_PASSWORD: root_password
     ports: 
-      - "8080:80"
+      - "3008:80"
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins_container
+    ports: 
+      - "3080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
 
 volumes:
   db_data:
   grafana_data:
+  jenkins_home:
 
