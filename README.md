@@ -333,8 +333,29 @@ grafana/
 │   │   └── dashboard.yml        # Configurações de dashboards
 └── Dockerfile_grafanaa                 # Configuração geral do Grafana
 ```
-   + Os dashboards criados, usuários configurados e outras configurações persistem mesmo após o contêiner ser reiniciado ou recriado.
+ + Os dashboards criados, usuários configurados e outras configurações persistem mesmo após o contêiner ser reiniciado ou recriado.
 
-   + As pastas são usadas para carregar automaticamente dashboards e datasources (fontes de dados).
+ + As pastas são usadas para carregar automaticamente dashboards e datasources (fontes de dados).
 
-    
+    # Último teste
+
+    ### O primeiro teste foi o acesso dentro do prometheus na web no "localhost:9090".
+
+    ![alt text](.github/assets/image-7.png)
+
+    ### Segundo teste e acessar o grafana, e dentro dela, inserir no "username" admin, "password" admin, para ter acesso dentro do Grafana.
+
+    ![alt text](.github/assets/image-11.png)
+
+    ### Depois de logar, vai na parte esquerda da página, na opção connections, na opção "data source", e procure prometheus e seleciona.
+
+    ![alt text](.github/assets/image-8.png)
+
+    ### Depois de selecionar, insira na "connection" a seguinte url
+
+    ![alt text](.github/assets/image-9.png)
+
+    ### E depois vai na opção save & teste.
+
+    ![alt text](.github/assets/image-10.png)
+
