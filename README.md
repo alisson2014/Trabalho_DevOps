@@ -246,15 +246,29 @@ EXPOSE 3306
   docker compose up -d
 ```
 
-  # Primeiro teste
+### Jenkins
+Foi configurado o arquivo para rodar a pipeline no Jenkins realizando download, testes e deploy da aplicação. 
+Para a pipeline rodar corretamente é importante que o jenkins esteja configurado no grupo do docker, caso não estiver basta rodar os comandos no terminal:
 
-  ### Depois de verificar os containers, o primeiro teste foi se o "localhost:5000" que foi configurado dentro do container flask-app está funcionando, e deu seguintes resultados:
+Adicionar ao grupo do docker
+```
+sudo usermod -aG docker jenkins
+```
 
-  ![alt text](.github/assets/image.png)
+Reiniciar o jenkins
+```
+sudo systemctl restart jenkins
+```
 
-  ### Em seguida, foi feito o teste dentro da web o "GET", e o "POST" dos alunos está funcionando, para garantir que a mariadb está armazenando os dados inseridos, nesse caso foi feito de forma manual.
+# Primeiro teste
 
-  ![alt text](.github/assets/image-1.png)
+### Depois de verificar os containers, o primeiro teste foi se o "localhost:5000" que foi configurado dentro do container flask-app está funcionando, e deu seguintes resultados:
+
+![alt text](.github/assets/image.png)
+
+### Em seguida, foi feito o teste dentro da web o "GET", e o "POST" dos alunos está funcionando, para garantir que a mariadb está armazenando os dados inseridos, nesse caso foi feito de forma manual.
+
+![alt text](.github/assets/image-1.png)
 
   # Conclusão
 
