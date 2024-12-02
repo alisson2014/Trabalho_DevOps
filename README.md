@@ -289,16 +289,52 @@ EXPOSE 3306
 
   ### Em seguida iremos entra na web com o "localhost:8080" que foi configurado dentro do container do jenkins, acessando na web, iremos utilizar as ferramentas disponíveis dentro do jenkins, nesse caso, iremos utiliar para gerenciar pipeline do projeto. Para isso, inserimos um nome no item, em seguida selecionamoes a opção "Pipeline", pois a pipeline no Jenkins automatiza o processo de integração e entrega contínua (CI/CD), orquestrando etapas como compilação, testes e implantação, depois de selecionado, iremos prosseguidar clicando o botão "Tudo pronto".
 
-  ![alt text](image-3.png)
+  ![alt text](.github/assets/image-3.png)
 
   ### Dentro da configuração, vamos na opção de definição, e trocamos para "Pipeline scrip from SCM", dentro do "SCM" selecionamoso "GIT", pois dessa forma podemos inserir o repositório do projeto dentro do campo "Repository URL", que no caso, o repósitrio que foi inserido foi esse: "https://github.com/alisson2014/Trabalho_DevOps.git", nas credenciais só é necessário configurar se no caso o repsitório for privado, como nosso caso é público, deixamos a opção "none", e na branch deixamos como /main, para executar dentro da branch principal.
 
-  ![alt text](image-4.png)
+  ![alt text](.github/assets/image-4.png)
 
-  ![alt text](image-5.png)
+  ![alt text](.github/assets/image-5.png)
 
   ### Para finalizar, foi testado dentro do jenkins os testes unitários, para garantir a integridade do código antes do deploy.
 
-  ![alt text](image-6.png)
+  ![alt text](.github/assets/image-6.png)
 
-  
+  # Promettheus e Grafana
+
+  ### Foi adicionado a pasta grafana e prometheus na raiz do projeto, primeiramente na raiz foi adicionado o arquivo prometheus.yml, ele é o arquivo de configuração do prometheus. Ele define como o Prometheus coleta métricas, de quais alvos (targets) ele as coleta, com que frequência e outras opções essenciais para o funcionamento do sistema.
+
+  ```docker
+  global:
+  scrape_interval: 15s # Intervalo padrão de coleta de métricas para todos os jobs
+
+scrape_configs:
+  - job_name: "prometheus" # Nome do job para o Prometheus
+    static_configs:
+      - targets: ["localhost:9090"] # Definição do alvo, neste caso o próprio Prometheus
+
+  - job_name: "mysqld_exporter"
+    static_configs:
+      - targets: ["mysqld_exporter:9104"]
+   ```   
+
+   ### Depois adicionamos a pasta grafana dentro da raiz, a pasta do Grafana dentro do Docker é usada para armazenar e organizar as configurações e dados persistentes do Grafana. Isso é importante porque, ao usar contêineres Docker, os dados dentro do contêiner são descartados quando ele é removido. Usar volumes ou montar pastas locais permite que as configurações sejam salvas entre as reinicializações do contêiner.
+
+   ### A tree do grafana ficaria dessa forma:
+   ```docker
+grafana/
+├── dashboards/
+│   └── my_dashboard.json        # Dashboards customizados
+├── provisioning/
+│   ├── datasources/
+│   │   └── datasource.yml       # Configurações de fontes de dados
+│   ├── dashboards/
+│   │   └── dashboard.yml        # Configurações de dashboards
+└── Dockerfile_grafanaa                 # Configuração geral do Grafana
+```
+   + Os dashboards criados, usuários configurados e outras configurações persistem mesmo após o contêiner ser reiniciado ou recriado.
+
+   + As pastas são usadas para carregar automaticamente dashboards e datasources (fontes de dados).
+
+    
