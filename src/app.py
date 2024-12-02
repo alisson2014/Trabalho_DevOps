@@ -16,7 +16,10 @@ metrics = PrometheusMetrics(app)
 app.config['SECRET_KEY'] = 'minha_chave_secreta_super_secreta'  # Substitua por uma chave segura
 
 # Configuração do banco de dados
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root_password@mariadb/school_db'
+if app.config['TESTING']:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'  # Banco de dados em memória para testes
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root_password@mariadb/school_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Inicializar o banco de dados e o AppBuilder
@@ -36,31 +39,32 @@ class Aluno(db.Model):
     disciplinas = db.Column(db.String(200), nullable=False)
     ra = db.Column(db.String(50), nullable=False)
 
-# Tentar conectar até o MariaDB estar pronto
-attempts = 5
-for i in range(attempts):
-    try:
-        with app.app_context():
-            db.create_all()  # Inicializa o banco de dados
-            # Criar um usuário administrador padrão
-            if not appbuilder.sm.find_user(username='admin'):
-                appbuilder.sm.add_user(
-                    username='admin',
-                    first_name='Admin',
-                    last_name='User',
-                    email='admin@admin.com',
-                    role=appbuilder.sm.find_role(appbuilder.sm.auth_role_admin),
-                    password='admin'
-                )
-        logger.info("Banco de dados inicializado com sucesso.")
-        break
-    except OperationalError:
-        if i < attempts - 1:
-            logger.warning("Tentativa de conexão com o banco de dados falhou. Tentando novamente em 5 segundos...")
-            time.sleep(5)  # Aguarda 5 segundos antes de tentar novamente
-        else:
-            logger.error("Não foi possível conectar ao banco de dados após várias tentativas.")
-            raise
+def init_db():
+    """Função para inicializar o banco de dados"""
+    attempts = 5
+    for i in range(attempts):
+        try:
+            with app.app_context():
+                db.create_all()  # Inicializa o banco de dados
+                # Criar um usuário administrador padrão
+                if not appbuilder.sm.find_user(username='admin'):
+                    appbuilder.sm.add_user(
+                        username='admin',
+                        first_name='Admin',
+                        last_name='User',
+                        email='admin@admin.com',
+                        role=appbuilder.sm.find_role(appbuilder.sm.auth_role_admin),
+                        password='admin'
+                    )
+            logger.info("Banco de dados inicializado com sucesso.")
+            break
+        except OperationalError:
+            if i < attempts - 1:
+                logger.warning("Tentativa de conexão com o banco de dados falhou. Tentando novamente em 5 segundos...")
+                time.sleep(5)  # Aguarda 5 segundos antes de tentar novamente
+            else:
+                logger.error("Não foi possível conectar ao banco de dados após várias tentativas.")
+                raise
 
 # Visão do modelo Aluno para o painel administrativo
 class AlunoModelView(ModelView):
@@ -93,4 +97,5 @@ def adicionar_aluno():
     return jsonify({'message': 'Aluno adicionado com sucesso!'}), 201
 
 if __name__ == '__main__':
+    init_db()
     app.run(host='0.0.0.0', port=5000, debug=True)
