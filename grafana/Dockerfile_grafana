@@ -1,0 +1,14 @@
+FROM grafana/grafana:latest
+
+USER root
+
+RUN mkdir /var/lib/grafana/dashboards
+
+COPY provisioning/datasource.yml /etc/grafana/provisioning/datasources/
+COPY provisioning/dashboard.yml /etc/grafana/provisioning/dashboards/
+COPY dashboards/mariadb_dashboard.json /var/lib/grafana/dashboards/
+
+RUN chown -R 472:472 /etc/grafana/provisioning
+
+USER grafana
+

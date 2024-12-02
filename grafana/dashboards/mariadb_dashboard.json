@@ -1,0 +1,209 @@
+{
+    "uid": "http_performance_dashboard",
+    "title": "Monitoramento HTTP - Métricas Principais",
+    "tags": [
+        "HTTP",
+        "Performance",
+        "Prometheus"
+    ],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 1,
+    "panels": [
+        {
+            "type": "graph",
+            "title": "Taxa de Requisições por Segundo",
+            "datasource": "Prometheus",
+            "gridPos": {
+                "x": 0,
+                "y": 0,
+                "w": 12,
+                "h": 6
+            },
+            "targets": [
+                {
+                    "expr": "rate(prometheus_http_requests_total[1m])",
+                    "legendFormat": "Requisições/s",
+                    "refId": "A"
+                }
+            ],
+            "lines": true,
+            "linewidth": 2,
+            "fill": 2
+        },
+        {
+            "type": "graph",
+            "title": "Tempo Médio de Resposta",
+            "datasource": "Prometheus",
+            "gridPos": {
+                "x": 12,
+                "y": 0,
+                "w": 12,
+                "h": 6
+            },
+            "targets": [
+                {
+                    "expr": "rate(prometheus_http_request_duration_seconds_sum[1m]) / rate(prometheus_http_request_duration_seconds_count[1m])",
+                    "legendFormat": "Latência Média (s)",
+                    "refId": "B"
+                }
+            ],
+            "lines": true,
+            "linewidth": 2,
+            "fill": 2
+        },
+        {
+            "type": "graph",
+            "title": "Requisições em Processo",
+            "datasource": "Prometheus",
+            "gridPos": {
+                "x": 0,
+                "y": 6,
+                "w": 12,
+                "h": 6
+            },
+            "targets": [
+                {
+                    "expr": "promhttp_metric_handler_requests_in_flight",
+                    "legendFormat": "Em Processo",
+                    "refId": "C"
+                }
+            ],
+            "lines": true,
+            "linewidth": 2,
+            "fill": 2
+        },
+        {
+            "type": "graph",
+            "title": "Taxa de Erros HTTP",
+            "datasource": "Prometheus",
+            "gridPos": {
+                "x": 12,
+                "y": 6,
+                "w": 12,
+                "h": 6
+            },
+            "targets": [
+                {
+                    "expr": "rate(prometheus_http_requests_total{status!~'2..'}[1m])",
+                    "legendFormat": "Erros/s",
+                    "refId": "D"
+                }
+            ],
+            "lines": true,
+            "linewidth": 2,
+            "fill": 2
+        },
+        {
+            "type": "graph",
+            "title": "Prometheus Node Status",
+            "datasource": "Prometheus",
+            "gridPos": {
+                "x": 0,
+                "y": 0,
+                "w": 24,
+                "h": 8
+            },
+            "targets": [
+                {
+                    "expr": "up",
+                    "legendFormat": "Node {{instance}}",
+                    "refId": "A"
+                }
+            ],
+            "xaxis": {
+                "show": true
+            },
+            "yaxes": [
+                {
+                    "format": "short",
+                    "show": true
+                },
+                {
+                    "show": true
+                }
+            ],
+            "lines": true,
+            "fill": 1,
+            "linewidth": 2,
+            "points": false,
+            "pointradius": 2
+        },
+        {
+            "type": "graph",
+            "title": "Uso de CPU do Prometheus",
+            "datasource": "Prometheus",
+            "gridPos": {
+                "x": 12,
+                "y": 8,
+                "w": 12,
+                "h": 8
+            },
+            "targets": [
+                {
+                    "expr": "rate(process_cpu_seconds_total[1m])",
+                    "legendFormat": "CPU Usage",
+                    "refId": "C"
+                }
+            ],
+            "xaxis": {
+                "show": true
+            },
+            "yaxes": [
+                {
+                    "format": "percent",
+                    "show": true
+                },
+                {
+                    "show": true
+                }
+            ],
+            "lines": true,
+            "fill": 1,
+            "linewidth": 2,
+            "points": false,
+            "pointradius": 2
+        },
+        {
+            "type": "graph",
+            "title": "Uso de Memória do Prometheus",
+            "datasource": "Prometheus",
+            "gridPos": {
+                "x": 0,
+                "y": 16,
+                "w": 12,
+                "h": 8
+            },
+            "targets": [
+                {
+                    "expr": "rate(process_resident_memory_bytes[1m])",
+                    "legendFormat": "Uso de Memória",
+                    "refId": "D"
+                }
+            ],
+            "xaxis": {
+                "show": true
+            },
+            "yaxes": [
+                {
+                    "format": "bytes",
+                    "show": true
+                },
+                {
+                    "show": true
+                }
+            ],
+            "lines": true,
+            "fill": 1,
+            "linewidth": 2,
+            "points": false,
+            "pointradius": 2
+        }
+    ],
+    "refresh": "15s",
+    "time": {
+        "from": "now-30m",
+        "to": "now"
+    },
+    "overwrite": true
+}
