@@ -32,15 +32,13 @@ services:
       FLASK_DB_NAME: school_db
 
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:latest
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
     depends_on:
-      - mysqld_exporter
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
+      - flask_app
 
   grafana:
     image: grafana/grafana:latest
