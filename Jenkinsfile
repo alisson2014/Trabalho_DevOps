@@ -31,7 +31,7 @@ pipeline {
 
         stage('Build e Deploy') {
             steps {
-                sh 'docker-compose up -d mariadb flask test mysqld_exporter prometheus grafana'
+                sh 'docker compose up --build -d'
             }
         }
     }
