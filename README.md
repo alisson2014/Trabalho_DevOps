@@ -1,21 +1,35 @@
-# Trabalho_DevOps_-2397826-
+# Trabalho_DevOps
 
 ## Alunos
 
 + Riyuiti Mizuno RA: 22.9016-0
 + Alisson Vinicius Morais de Almeida  RA: 23.9782-6
 
+## Introdução
+
+Neste trabalho implementamos as rotas *GET* e *POST* de alunos no flask, bem como fizemos *testes de unidade* para garantir a integridade do código. Todo o projeto foi desenvolvido usando conceitos de *DEVOPS*, que foi a disciplina do mesmo.
+
+### Tecnologias
+Neste projeto usamos as seguintes tecnologias:
+- Linux;
+- Docker;
+- Docker Compose;
+- Git;
+- GitHub;
+- Jenkins;
+- Python;
+
 ## Inicio
 
 ### O arquivo docker-compose.yml foi criado pelo terminal do ubuntu, para que possa configurar os container dentro do projeto.
 
-```docker
+```
 vim docker-compose.yml
 ```
 
 ### Para editar o arquivo docker-compose.yml decidimos editar pelo visual studio code, pois dessa achamos que seria da forma mais fácil de organizar, e implmentar novos codigos dentro dele. Dessa forma, dentro do arquivo foi inserido o seguinte codigo:
 
-```docker
+```docker-compose.yml
 services:
   mariadb:
     build:
@@ -78,6 +92,15 @@ services:
     ports: 
       - "3008:80"
 
+  mysqld_exporter:
+    image: prom/mysqld-exporter
+    environment:
+      - DATA_SOURCE_NAME=mysql://flask_user:flask_password@mariadb:3306/school_db
+    ports:
+      - "9104:9104"
+    depends_on:
+      - mariadb
+
 volumes:
   db_data:
   grafana_data:
@@ -85,8 +108,7 @@ volumes:
 
   ### Decidimos implementar todos os containers necessarios para o projeto, que no caso foi o mariaDB, flask, prometheus, grafana e php. Após isso, criamos a pasta src e dentro dele criamos o arquivo app.py, com os seguintes códigos:
 
-```docker
-
+```app.py
 # Código principal do Flask (app.py)
 import time
 from flask import Flask, request, jsonify
@@ -105,7 +127,10 @@ metrics = PrometheusMetrics(app)
 app.config['SECRET_KEY'] = 'minha_chave_secreta_super_secreta'  # Substitua por uma chave segura
 
 # Configuração do banco de dados
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root_password@mariadb/school_db'
+if app.config['TESTING']:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'  # Banco de dados em memória para testes
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root_password@mariadb/school_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Inicializar o banco de dados e o AppBuilder
@@ -125,31 +150,32 @@ class Aluno(db.Model):
     disciplinas = db.Column(db.String(200), nullable=False)
     ra = db.Column(db.String(50), nullable=False)
 
-# Tentar conectar até o MariaDB estar pronto
-attempts = 5
-for i in range(attempts):
-    try:
-        with app.app_context():
-            db.create_all()  # Inicializa o banco de dados
-            # Criar um usuário administrador padrão
-            if not appbuilder.sm.find_user(username='admin'):
-                appbuilder.sm.add_user(
-                    username='admin',
-                    first_name='Admin',
-                    last_name='User',
-                    email='admin@admin.com',
-                    role=appbuilder.sm.find_role(appbuilder.sm.auth_role_admin),
-                    password='admin'
-                )
-        logger.info("Banco de dados inicializado com sucesso.")
-        break
-    except OperationalError:
-        if i < attempts - 1:
-            logger.warning("Tentativa de conexão com o banco de dados falhou. Tentando novamente em 5 segundos...")
-            time.sleep(5)  # Aguarda 5 segundos antes de tentar novamente
-        else:
-            logger.error("Não foi possível conectar ao banco de dados após várias tentativas.")
-            raise
+def init_db():
+    """Função para inicializar o banco de dados"""
+    attempts = 5
+    for i in range(attempts):
+        try:
+            with app.app_context():
+                db.create_all()  # Inicializa o banco de dados
+                # Criar um usuário administrador padrão
+                if not appbuilder.sm.find_user(username='admin'):
+                    appbuilder.sm.add_user(
+                        username='admin',
+                        first_name='Admin',
+                        last_name='User',
+                        email='admin@admin.com',
+                        role=appbuilder.sm.find_role(appbuilder.sm.auth_role_admin),
+                        password='admin'
+                    )
+            logger.info("Banco de dados inicializado com sucesso.")
+            break
+        except OperationalError:
+            if i < attempts - 1:
+                logger.warning("Tentativa de conexão com o banco de dados falhou. Tentando novamente em 5 segundos...")
+                time.sleep(5)  # Aguarda 5 segundos antes de tentar novamente
+            else:
+                logger.error("Não foi possível conectar ao banco de dados após várias tentativas.")
+                raise
 
 # Visão do modelo Aluno para o painel administrativo
 class AlunoModelView(ModelView):
@@ -182,10 +208,12 @@ def adicionar_aluno():
     return jsonify({'message': 'Aluno adicionado com sucesso!'}), 201
 
 if __name__ == '__main__':
+    init_db()
     app.run(host='0.0.0.0', port=5000, debug=True)
+```
 
-  ### Após os cógidos, criamos o arquivo requirementes.txt para colocar todas as depencias necessárias para o projeto.
-
+### Após os cógidos, criamos o arquivo requirementes.txt para colocar todas as depencias necessárias para o projeto.
+```requirements.txt
 pytest==6.2.5
 pytest-flask==1.2.0
 Flask-Testing==0.8.0
@@ -197,9 +225,11 @@ Werkzeug==1.0.1  # Versão compatível do Werkzeug para evitar erros de importa�
 MarkupSafe==2.0.1  # Versão compatível com Jinja2 e Flask
 WTForms==2.3.3  # Versão compatível com Flask-AppBuilder que contém o módulo 'compat'
 prometheus-flask-exporter==0.18.3
+```
 
-  ### Em seguida, criamos uma pasta docker dentro da raiz, e nela foi criado a pasta mariaDB, dentro dela com o arquivo Dockerfile
+### Em seguida, criamos uma pasta docker dentro da raiz, e nela foi criado a pasta mariaDB, dentro dela com o arquivo Dockerfile
 
+```Dockerfile
 FROM mariadb:10.5
 
 ENV MYSQL_ROOT_PASSWORD=root_password
@@ -210,21 +240,35 @@ ENV MYSQL_PASSWORD=flask_password
 EXPOSE 3306
 ```
 
-  ### Após o banco de dados, foi inserido o comando no terminal para subir os container que foram criados:
+### Após o banco de dados, foi inserido o comando no terminal para subir os container que foram criados:
 
-```docker
+```
   docker compose up -d
-  ```
+```
 
-  # Primeiro teste
+### Jenkins
+Foi configurado o arquivo para rodar a pipeline no Jenkins realizando download, testes e deploy da aplicação. 
+Para a pipeline rodar corretamente é importante que o jenkins esteja configurado no grupo do docker, caso não estiver basta rodar os comandos no terminal:
 
-  ### Depois de verificar os containers, o primeiro teste foi se o "localhost:5000" que foi configurado dentro do container flask-app está funcionando, e deu seguintes resultados:
+Adicionar ao grupo do docker
+```
+sudo usermod -aG docker jenkins
+```
 
-  ![alt text](.github/assets/image.png)
+Reiniciar o jenkins
+```
+sudo systemctl restart jenkins
+```
 
-  ### Em seguida, foi feito o teste dentro da web o "GET", e o "POST" dos alunos está funcionando, para garantir que a mariadb está armazenando os dados inseridos, nesse caso foi feito de forma manual.
+# Primeiro teste
 
-  ![alt text](.github/assets/image-1.png)
+### Depois de verificar os containers, o primeiro teste foi se o "localhost:5000" que foi configurado dentro do container flask-app está funcionando, e deu seguintes resultados:
+
+![alt text](.github/assets/image.png)
+
+### Em seguida, foi feito o teste dentro da web o "GET", e o "POST" dos alunos está funcionando, para garantir que a mariadb está armazenando os dados inseridos, nesse caso foi feito de forma manual.
+
+![alt text](.github/assets/image-1.png)
 
   # Conclusão
 
