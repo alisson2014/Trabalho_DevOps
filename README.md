@@ -402,4 +402,6 @@ grafana/
     ### E depois vai na opção save & teste.
 
     ![alt text](.github/assets/image-10.png)
-
+    
+# Resultado dashboard grafana
+![alt text](.github/assets/dash.jpg)
