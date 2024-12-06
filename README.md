@@ -402,6 +402,7 @@ grafana/
     ### E depois vai na opção save & teste.
 
     ![alt text](.github/assets/image-10.png)
-    
+
 # Resultado dashboard grafana
+Após realizar alguns testes, obtivemos o seguinte resultado no grafana que junto do prometheus realizavam o monitoramento do app.
 ![alt text](.github/assets/dash.jpg)
